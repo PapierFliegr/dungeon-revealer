@@ -87,6 +87,7 @@ import { dmMap_ShowGridSettingsPopupMapFragment$key } from "./__generated__/dmMa
 import { dmMap_ShowGridSettingsPopupGridFragment$key } from "./__generated__/dmMap_ShowGridSettingsPopupGridFragment.graphql";
 import { dmMap_GridSettingButton_MapFragment$key } from "./__generated__/dmMap_GridSettingButton_MapFragment.graphql";
 import { dmMap_mapUpdateGridMutation } from "./__generated__/dmMap_mapUpdateGridMutation.graphql";
+import { dmMap_MapUpdateRotationMutation } from "./__generated__/dmMap_MapUpdateRotationMutation.graphql";
 import { dmMap_GridConfigurator_MapFragment$key } from "./__generated__/dmMap_GridConfigurator_MapFragment.graphql";
 import { dmMap_MapPingMutation } from "./__generated__/dmMap_MapPingMutation.graphql";
 import { UpdateTokenContext } from "../update-token-context";
@@ -587,9 +588,21 @@ const MapPingMutation = graphql`
   }
 `;
 
+const MapUpdateRotationMutation = graphql`
+  mutation dmMap_MapUpdateRotationMutation($input: MapUpdateRotationInput!) {
+    mapUpdateRotation(input: $input) {
+      updatedMap {
+        id
+        rotation
+      }
+    }
+  }
+`;
+
 const DMMapFragment = graphql`
   fragment dmMap_DMMapFragment on Map {
     id
+    rotation
     grid {
       offsetX
       offsetY
@@ -620,6 +633,9 @@ export const DmMap = (props: {
 }): React.ReactElement => {
   const map = useFragment(DMMapFragment, props.map);
   const [mapPing] = useMutation<dmMap_MapPingMutation>(MapPingMutation);
+  const [mapUpdateRotation] = useMutation<dmMap_MapUpdateRotationMutation>(
+    MapUpdateRotationMutation
+  );
   const controlRef = props.controlRef;
 
   const [activeToolId, setActiveToolId] = usePersistedState(
@@ -695,6 +711,30 @@ export const DmMap = (props: {
       }),
       [map.grid]
     );
+
+  const rotateClockwise = React.useCallback(() => {
+    const newRotation = (map.rotation + 90) % 360;
+    mapUpdateRotation({
+      variables: {
+        input: {
+          mapId: map.id,
+          rotation: newRotation,
+        },
+      },
+    });
+  }, [map.id, map.rotation, mapUpdateRotation]);
+
+  const rotateCounterClockwise = React.useCallback(() => {
+    const newRotation = (map.rotation - 90 + 360) % 360;
+    mapUpdateRotation({
+      variables: {
+        input: {
+          mapId: map.id,
+          rotation: newRotation,
+        },
+      },
+    });
+  }, [map.id, map.rotation, mapUpdateRotation]);
 
   return (
     <FlatContextProvider
@@ -786,6 +826,7 @@ export const DmMap = (props: {
             SharedTokenStateStoreContext,
           ]}
           fogOpacity={0.5}
+          rotation={map.rotation}
         />
       </React.Suspense>
 
@@ -900,6 +941,18 @@ export const DmMap = (props: {
                   >
                     <Icon.Image boxSize="20px" />
                     <Icon.Label>Media Library</Icon.Label>
+                  </Toolbar.Button>
+                </Toolbar.Item>
+                <Toolbar.Item isActive>
+                  <Toolbar.Button onClick={rotateCounterClockwise}>
+                    <Icon.RotateCCW boxSize="20px" />
+                    <Icon.Label>Rotate Left</Icon.Label>
+                  </Toolbar.Button>
+                </Toolbar.Item>
+                <Toolbar.Item isActive>
+                  <Toolbar.Button onClick={rotateClockwise}>
+                    <Icon.RotateCW boxSize="20px" />
+                    <Icon.Label>Rotate Right</Icon.Label>
                   </Toolbar.Button>
                 </Toolbar.Item>
               </Toolbar.Group>

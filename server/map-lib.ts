@@ -294,6 +294,32 @@ export const mapUpdateGrid = (params: {
     RT.map((updatedMap): MapUpdateTitleResult => ({ updatedMap }))
   );
 
+export type MapUpdateRotationResult = {
+  updatedMap: MapEntity;
+};
+
+export const mapUpdateRotation = (params: {
+  mapId: string;
+  rotation: number;
+}) =>
+  pipe(
+    auth.requireAdmin(),
+    RT.chainW(() => RT.ask<MapsDependency>()),
+    RT.chain(
+      (deps) => () => () =>
+        deps.maps.updateMapSettings(params.mapId, {
+          rotation: params.rotation,
+        })
+    ),
+    RT.chainW((map) =>
+      pipe(
+        invalidateResourcesRT([`Map:${map.id}`]),
+        RT.map(() => map)
+      )
+    ),
+    RT.map((updatedMap): MapUpdateRotationResult => ({ updatedMap }))
+  );
+
 export const getActiveMap = () =>
   pipe(
     auth.requireAuth(),

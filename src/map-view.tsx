@@ -1635,9 +1635,10 @@ const MapViewRenderer = (props: {
   );
 };
 
-const MapCanvasContainer = styled.div`
+const MapCanvasContainer = styled.div<{ rotation?: number }>`
   height: 100%;
   touch-action: manipulation;
+  transform: rotate(${(p) => p.rotation ?? 0}deg);
 `;
 
 const MapFragment = graphql`
@@ -1657,6 +1658,7 @@ export const MapView = (props: {
   /* List of contexts that need to be proxied into R3F */
   sharedContexts: Array<React.Context<any>>;
   fogOpacity: number;
+  rotation?: number;
 }): React.ReactElement | null => {
   const ContextBridge = useContextBridge(...props.sharedContexts);
 
@@ -1729,7 +1731,7 @@ export const MapView = (props: {
   }, [map.fogLiveImageUrl, map.fogProgressImageUrl, isDungeonMaster]);
 
   return mapImage ? (
-    <MapCanvasContainer>
+    <MapCanvasContainer rotation={props.rotation}>
       <Canvas
         camera={{ position: [0, 0, 5] }}
         pixelRatio={window.devicePixelRatio}

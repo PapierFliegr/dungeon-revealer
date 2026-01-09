@@ -153,6 +153,10 @@ type Map {
   showGrid: Boolean!
   showGridToPlayers: Boolean!
   tokens: [MapToken!]!
+  """
+  The rotation of the map in degrees (0, 90, 180, 270).
+  """
+  rotation: Int!
 }
 
 type MapGrid {
@@ -228,6 +232,11 @@ type Mutation {
   Update the grid of a map.
   """
   mapUpdateGrid(input: MapUpdateGridInput!): MapUpdateGridResult!
+
+  """
+  Update the rotation of a map.
+  """
+  mapUpdateRotation(input: MapUpdateRotationInput!): MapUpdateRotationResult!
 
   """
   Ping a point on the map.
@@ -457,6 +466,15 @@ input MapUpdateGridInput {
   grid: GridInput!
   showGrid: Boolean!
   showGridToPlayers: Boolean!
+}
+
+type MapUpdateRotationResult {
+  updatedMap: Map!
+}
+
+input MapUpdateRotationInput {
+  mapId: ID!
+  rotation: Int!
 }
 
 input GridInput {

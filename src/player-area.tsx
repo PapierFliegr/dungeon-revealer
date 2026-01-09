@@ -58,6 +58,7 @@ const PlayerMap_ActiveMapQuery = graphql`
   query playerArea_PlayerMap_ActiveMapQuery @live {
     activeMap {
       id
+      rotation
       ...mapView_MapFragment
     }
   }
@@ -238,6 +239,7 @@ const PlayerMap = ({
                   UpdateTokenContext,
                 ]}
                 fogOpacity={1}
+                rotation={currentMap.data.activeMap.rotation}
               />
             </React.Suspense>
           ) : null}
