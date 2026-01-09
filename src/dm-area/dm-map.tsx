@@ -19,7 +19,6 @@ import {
   NumberInputStepper,
   NumberIncrementStepper,
   NumberDecrementStepper,
-  useToast,
 } from "@chakra-ui/react";
 import graphql from "babel-plugin-relay/macro";
 import { ReactRelayContext, useFragment, useMutation } from "relay-hooks";
@@ -50,7 +49,6 @@ import {
   AreaSelectMapTool,
 } from "../map-tools/area-select-map-tool";
 import { useOnClickOutside } from "../hooks/use-on-click-outside";
-import { useAsyncClipboardApi } from "../hooks/use-async-clipboard-api";
 import { MapTokenEntity } from "../map-typings";
 import { useConfirmationDialog } from "../hooks/use-confirmation-dialog";
 import { applyFogRectangle } from "../canvas-draw-utilities";
@@ -70,7 +68,6 @@ import {
   TokenMarkerContextProvider,
   TokenMarkerMapTool,
 } from "../map-tools/token-marker-map-tool";
-import { NoteWindowActionsContext } from "./token-info-aside";
 import { ColorPickerInput } from "../color-picker-input";
 import { buttonGroup, useControls, useCreateStore, LevaInputs } from "leva";
 import { levaPluginIconPicker } from "../leva-plugin/leva-plugin-icon-picker";
@@ -612,7 +609,6 @@ export const DmMap = (props: {
   liveMapId: string | null;
   hideMap: () => void;
   showMapModal: () => void;
-  openNotes: () => void;
   openMediaLibrary: () => void;
   sendLiveMap: (image: HTMLCanvasElement) => void;
   saveFogProgress: (image: HTMLCanvasElement) => void;
@@ -641,40 +637,6 @@ export const DmMap = (props: {
 
   const isCurrentMapLive = map.id !== null && map.id === props.liveMapId;
   const isOtherMapLive = props.liveMapId !== null;
-
-  const showToast = useToast();
-  const asyncClipBoardApi = useAsyncClipboardApi();
-
-  const copyMapToClipboard = () => {
-    if (!controlRef.current || !asyncClipBoardApi) {
-      return;
-    }
-    const { mapCanvas, fogCanvas } = controlRef.current.getContext();
-    const canvas = new OffscreenCanvas(mapCanvas.width, mapCanvas.height);
-    const context = canvas.getContext("2d")!;
-    context.drawImage(mapCanvas, 0, 0);
-    context.drawImage(fogCanvas, 0, 0);
-
-    const { clipboard, ClipboardItem } = asyncClipBoardApi;
-    canvas.convertToBlob().then((blob) => {
-      clipboard
-        .write([
-          new ClipboardItem({
-            [blob.type]: blob,
-          }),
-        ])
-        .then(() => {
-          showToast({
-            title: `Copied map image to clipboard.`,
-            status: "success",
-            duration: 3000,
-            isClosable: true,
-            position: "top",
-          });
-        })
-        .catch(console.error);
-    });
-  };
 
   const isConfiguringGrid = userSelectedTool === ConfigureGridMapTool;
   const isConfiguringGridRef = React.useRef(isConfiguringGrid);
@@ -817,7 +779,6 @@ export const DmMap = (props: {
             ConfigureGridMapToolContext,
             AreaSelectContext,
             TokenMarkerContext,
-            NoteWindowActionsContext,
             ReactRelayContext,
             UpdateTokenContext,
             IsDungeonMasterContext,
@@ -941,16 +902,6 @@ export const DmMap = (props: {
                     <Icon.Label>Media Library</Icon.Label>
                   </Toolbar.Button>
                 </Toolbar.Item>
-                <Toolbar.Item isActive>
-                  <Toolbar.Button
-                    onClick={() => {
-                      props.openNotes();
-                    }}
-                  >
-                    <Icon.BookOpen boxSize="20px" />
-                    <Icon.Label>Notes</Icon.Label>
-                  </Toolbar.Button>
-                </Toolbar.Item>
               </Toolbar.Group>
             </Toolbar>
             <MarginLeftDiv />
@@ -1000,14 +951,6 @@ export const DmMap = (props: {
                     <Icon.Label color="hsl(211, 27%, 70%)">Not Live</Icon.Label>
                   </Toolbar.Item>
                 )}
-                {asyncClipBoardApi ? (
-                  <Toolbar.Item isActive>
-                    <Toolbar.Button onClick={copyMapToClipboard}>
-                      <Icon.Clipboard boxSize="20px" />
-                      <Icon.Label>Clipboard</Icon.Label>
-                    </Toolbar.Button>
-                  </Toolbar.Item>
-                ) : null}
                 <Toolbar.Item isActive>
                   <Toolbar.Button
                     onClick={() => {

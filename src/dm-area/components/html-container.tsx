@@ -10,6 +10,7 @@ import {
   Text,
   Divider,
   Checkbox,
+  Link,
 } from "@chakra-ui/react";
 import _sanitizeHtml from "sanitize-html";
 import { StyleSheet } from "@emotion/sheet";
@@ -18,9 +19,7 @@ import {
   parseTemplateAttributes,
   Attribute,
 } from "../../utilities/attribute-parser";
-import { NoteLink } from "./note-link";
 import { SharableImage } from "./sharable-image";
-import { ChatMessageButton } from "./chat-message-button";
 import { randomHash } from "../../utilities/random-hash";
 import { processUserStyleSheet } from "../../utilities/process-user-style-sheet";
 import { useUserStyleSheetOrchestrator } from "../../user-style-sheet-orchestrator";
@@ -44,9 +43,7 @@ const H4: React.FC = (props) => (
 
 const components = {
   Image: SharableImage,
-  ChatMessage: ChatMessageButton,
-  ChatMacro: ChatMessageButton,
-  Link: NoteLink,
+  Link: Link,
   Checkbox: Checkbox,
   h1: H1,
   h2: H2,
@@ -175,9 +172,6 @@ const sanitizeHtml = (html: string) =>
     allowedTags,
     allowedAttributes: {
       Image: ["id"],
-      ChatMacro: ["message", "templateId", "var-*"],
-      // alias for ChatMessage
-      ChatMessage: ["message", "templateId", "var-*"],
       Link: ["id"],
       Checkbox: ["isReadOnly", "isChecked", "verticalAlign", "spacing"],
       div: ["style", "class"],

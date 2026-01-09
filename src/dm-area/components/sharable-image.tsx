@@ -1,7 +1,6 @@
 import React from "react";
 import styled from "@emotion/styled/macro";
 import { buildApiUrl } from "../../public-url";
-import { useShareImageAction } from "../../hooks/use-share-image-action";
 import * as Icon from "../../feather-icons";
 import * as Button from "../../button";
 import { ImageLightBoxModal } from "../../image-lightbox-modal";
@@ -36,7 +35,6 @@ const Menu = styled.span`
 
 export const SharableImage: React.FC<{ id: string }> = (props) => {
   const [showLightboxImage, setShowLightBoxImage] = React.useState(false);
-  const shareImage = useShareImageAction();
   const splashShareImage = useSplashShareImageAction();
   const role = useViewerRole();
 
@@ -60,14 +58,6 @@ export const SharableImage: React.FC<{ id: string }> = (props) => {
             <Icon.Share boxSize="16px" />
           </Button.Primary>
         ) : null}
-        <Button.Primary
-          small
-          title="Share to Chat"
-          iconOnly
-          onClick={() => shareImage(props.id)}
-        >
-          <Icon.MessageCircle boxSize="16px" />
-        </Button.Primary>
         <Button.Primary
           small
           title="Maximize"

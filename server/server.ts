@@ -18,7 +18,6 @@ import { createSocketSessionStore } from "./socket-session-store";
 import { EventEmitter } from "events";
 import type { getEnv } from "./env";
 import createGraphQLRouter from "./routes/graphql";
-import createNotesRouter from "./routes/notes";
 import type {
   ErrorRequestHandler,
   RequestHandler,
@@ -208,13 +207,10 @@ export const bootstrapServer = async (env: ReturnType<typeof getEnv>) => {
     settings,
     emitter,
   });
-  const notesImportRouter = createNotesRouter({ db, roleMiddleware });
 
   apiRouter.use(mapsRouter);
-  // apiRouter.use(notesRouter);
   apiRouter.use(fileRouter);
   app.use(graphqlRouter);
-  apiRouter.use(notesImportRouter);
 
   app.use("/api", apiRouter);
 

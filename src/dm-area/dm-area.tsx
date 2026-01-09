@@ -22,7 +22,6 @@ import { DmMap } from "./dm-map";
 import { Socket } from "socket.io-client";
 import { MapTokenEntity } from "../map-typings";
 import { isFileDrag } from "../hooks/use-drop-zone";
-import { useNoteWindowActions } from "./token-info-aside";
 import { MapControlInterface } from "../map-view";
 import { useTokenImageUpload } from "./token-image-upload";
 import { dmAreaTokenAddManyMutation } from "./__generated__/dmAreaTokenAddManyMutation.graphql";
@@ -284,7 +283,6 @@ const Content = ({
     null
   );
 
-  const actions = useNoteWindowActions();
   const controlRef = React.useRef<MapControlInterface | null>(null);
 
   const dragRef = React.useRef(0);
@@ -475,9 +473,6 @@ const Content = ({
               saveFogProgress={saveFogProgress}
               hideMap={hideMap}
               showMapModal={showMapModal}
-              openNotes={() => {
-                actions.showNoteInWindow(null, "note-editor", true);
-              }}
               openMediaLibrary={() => {
                 setMode({ title: "MEDIA_LIBRARY" });
               }}

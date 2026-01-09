@@ -62,3 +62,48 @@ export const GraphQLImageType = t.objectType<ImageModelType>({
     }),
   ],
 });
+
+const GraphQLSplashShareImageInputType = t.inputObjectType({
+  name: "SplashShareImageInput",
+  fields: () => ({
+    imageId: {
+      type: t.ID,
+    },
+  }),
+});
+
+export const queryFields = [
+  t.field({
+    name: "sharedSplashImage",
+    type: GraphQLImageType,
+    resolve: (_, __, context) => {
+      const id = context.splashImageState.get();
+
+      if (id === null) {
+        return null;
+      }
+
+      return RT.run(resolveImage(id), context);
+    },
+  }),
+];
+
+export const mutationFields = [
+  t.field({
+    name: "splashShareImage",
+    type: t.Boolean,
+    args: {
+      input: t.arg(t.NonNullInput(GraphQLSplashShareImageInputType)),
+    },
+    resolve: (_, args, context) => {
+      const user = context.user.get(context.session.id);
+      if (!user || context.session.role !== "admin") {
+        return null;
+      }
+      context.splashImageState.set(args.input.imageId);
+      context.liveQueryStore.invalidate("Query.sharedSplashImage");
+
+      return null;
+    },
+  }),
+];
