@@ -14,10 +14,6 @@
 
 ### [Grid](https://github.com/dungeon-revealer/dungeon-revealer/wiki/Grid)
 
-### [Notes](https://github.com/dungeon-revealer/dungeon-revealer/wiki/Notes)
-
-### [Dice Macros](https://github.com/dungeon-revealer/dungeon-revealer/wiki/Dice-Macros)
-
 ## Other
 
 ### [Community Showcase](https://github.com/dungeon-revealer/dungeon-revealer/wiki/Community-Showcase)

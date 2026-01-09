@@ -10,6 +10,7 @@ import {
   Text,
   Divider,
   Checkbox,
+  Link,
 } from "@chakra-ui/react";
 import _sanitizeHtml from "sanitize-html";
 import { StyleSheet } from "@emotion/sheet";
@@ -18,7 +19,6 @@ import {
   parseTemplateAttributes,
   Attribute,
 } from "../../utilities/attribute-parser";
-import { NoteLink } from "./note-link";
 import { SharableImage } from "./sharable-image";
 import { randomHash } from "../../utilities/random-hash";
 import { processUserStyleSheet } from "../../utilities/process-user-style-sheet";
@@ -43,7 +43,7 @@ const H4: React.FC = (props) => (
 
 const components = {
   Image: SharableImage,
-  Link: NoteLink,
+  Link: Link,
   Checkbox: Checkbox,
   h1: H1,
   h2: H2,

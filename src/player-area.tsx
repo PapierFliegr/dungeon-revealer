@@ -22,10 +22,6 @@ import {
   FlatContextProvider,
 } from "./flat-context-provider";
 import { MarkAreaToolContext } from "./map-tools/mark-area-map-tool";
-import {
-  NoteWindowActionsContext,
-  useNoteWindowActions,
-} from "./dm-area/token-info-aside";
 import { playerArea_PlayerMap_ActiveMapQuery } from "./__generated__/playerArea_PlayerMap_ActiveMapQuery.graphql";
 import { playerArea_MapPingMutation } from "./__generated__/playerArea_MapPingMutation.graphql";
 import { UpdateTokenContext } from "./update-token-context";
@@ -187,7 +183,6 @@ const PlayerMap = ({
       },
     }
   );
-  const noteWindowActions = useNoteWindowActions();
   return (
     <>
       <div
@@ -239,7 +234,6 @@ const PlayerMap = ({
                 controlRef={controlRef}
                 sharedContexts={[
                   MarkAreaToolContext,
-                  NoteWindowActionsContext,
                   ReactRelayContext,
                   UpdateTokenContext,
                 ]}
@@ -311,20 +305,6 @@ const PlayerMap = ({
                         >
                           <Icon.ZoomOut boxSize="20px" />
                           <Icon.Label>Zoom Out</Icon.Label>
-                        </Toolbar.LongPressButton>
-                      </Toolbar.Item>
-                      <Toolbar.Item isActive>
-                        <Toolbar.LongPressButton
-                          onClick={() => {
-                            noteWindowActions.showNoteInWindow(
-                              null,
-                              "note-editor",
-                              true
-                            );
-                          }}
-                        >
-                          <Icon.BookOpen boxSize="20px" />
-                          <Icon.Label>Notes</Icon.Label>
                         </Toolbar.LongPressButton>
                       </Toolbar.Item>
                     </Toolbar.Group>

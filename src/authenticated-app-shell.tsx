@@ -5,10 +5,6 @@ import { RelayEnvironmentProvider } from "relay-hooks";
 import { useStaticRef } from "./hooks/use-static-ref";
 import { SplashScreen } from "./splash-screen";
 import styled from "@emotion/styled/macro";
-import {
-  TokenInfoAside,
-  NoteWindowContextProvider,
-} from "./dm-area/token-info-aside";
 import { SoundSettingsProvider } from "./sound-settings";
 import { SplashShareImage } from "./splash-share-image";
 
@@ -24,15 +20,12 @@ const AuthenticatedAppShellRenderer: React.FC<{ isMapOnly: boolean }> = ({
   children,
 }) => {
   return (
-    <NoteWindowContextProvider>
-      <Container>
-        <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
-          {children}
-        </div>
-        <SplashShareImage />
-      </Container>
-      {isMapOnly === false ? <TokenInfoAside /> : null}
-    </NoteWindowContextProvider>
+    <Container>
+      <div style={{ flex: 1, position: "relative", overflow: "hidden" }}>
+        {children}
+      </div>
+      <SplashShareImage />
+    </Container>
   );
 };
 

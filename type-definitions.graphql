@@ -15,124 +15,10 @@ directive @live(
   throttle: Int
 ) on QUERY
 
-type DiceRollOperatorNode implements DiceRollDetail {
-  content: String!
-}
-
-interface DiceRollDetail {
-  content: String!
-}
-
-type DiceRollConstantNode implements DiceRollDetail {
-  content: String!
-}
-
-type DiceRollDiceRollNode implements DiceRollDetail {
-  content: String!
-  min: Float!
-  max: Float!
-  rollResults: [DiceRollResult!]!
-}
-
-type DiceRollResult {
-  dice: String!
-  result: Float!
-  category: DiceRollCategory!
-  crossedOut: Boolean!
-}
-
-enum DiceRollCategory {
-  DEFAULT
-  MAX
-  MIN
-}
-
-type DiceRollOpenParenNode implements DiceRollDetail {
-  content: String!
-}
-
-type DiceRollCloseParenNode implements DiceRollDetail {
-  content: String!
-}
-
-"""
-A chat message
-"""
-type UserChatMessage implements ChatMessage & TextChatMessage {
-  id: ID!
-  authorName: String!
-  content: String!
-  diceRolls: [DiceRoll!]!
-  referencedDiceRolls: [DiceRoll!]!
-  createdAt: String!
-  containsDiceRoll: Boolean!
-}
-
-interface ChatMessage {
-  id: ID!
-}
-
-interface TextChatMessage implements ChatMessage {
-  id: ID!
-  content: String!
-  createdAt: String!
-  containsDiceRoll: Boolean!
-}
-
-type DiceRoll {
-  result: Float!
-  detail: [DiceRollDetail!]!
-  rollId: String!
-}
-
-type OperationalChatMessage implements ChatMessage & TextChatMessage {
-  id: ID!
-  content: String!
-  createdAt: String!
-  containsDiceRoll: Boolean!
-}
-
-type SharedResourceChatMessage implements ChatMessage {
-  id: ID!
-  authorName: String!
-  resource: SharedResource
-}
-
-union SharedResource = Note | Image
-
-type Note implements Node {
-  id: ID!
-  documentId: ID!
-  title: String!
-  content: String!
-  contentPreview: String!
-  createdAt: Int!
-  viewerCanEdit: Boolean!
-  viewerCanShare: Boolean!
-  access: String!
-  isEntryPoint: Boolean!
-  updatedAt: Int!
-}
-
-interface Node {
-  id: ID!
-}
-
-type Image implements Node {
-  id: ID!
-  imageId: ID!
-  url: String!
-}
-
 type Query {
-  chat(first: Int, after: ID): ChatMessageConnection!
-  sharedSplashImage: Image
   users(first: Int, after: ID): ConnectedUserConnection!
   usersCount: Int!
   me: User!
-  notes(first: Int, after: String, filter: NotesFilter): NoteConnection!
-  notesSearch(first: Int, after: String, query: String): NoteSearchConnection!
-  note(documentId: ID!): Note
   tokenImages(
     first: Int
     after: String
@@ -169,24 +55,8 @@ type Query {
   Get a map by id.
   """
   map(id: ID!): Map
+  sharedSplashImage: Image
   node(id: ID!): Node
-}
-
-type ChatMessageConnection {
-  edges: [ChatMessageEdge!]!
-  pageInfo: PageInfo!
-}
-
-type ChatMessageEdge {
-  cursor: String!
-  node: ChatMessage!
-}
-
-type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String!
-  endCursor: String!
 }
 
 type ConnectedUserConnection {
@@ -204,46 +74,11 @@ type User {
   name: String!
 }
 
-type NoteConnection {
-  edges: [NoteEdge!]!
-  pageInfo: PageInfo!
-}
-
-type NoteEdge {
-  cursor: String!
-  node: Note!
-}
-
-"""
-A filter that can be applied to the paginated notes.
-"""
-enum NotesFilter {
-  """
-  Only return notes that are marked as entrypoints.
-  """
-  Entrypoint
-
-  """
-  Return all notes.
-  """
-  All
-}
-
-type NoteSearchConnection {
-  pageInfo: PageInfo
-  edges: [NoteSearchEdgeType!]!
-}
-
-type NoteSearchEdgeType {
-  cursor: String!
-  node: NoteSearchResultType!
-}
-
-type NoteSearchResultType {
-  noteId: ID!
-  documentId: ID!
-  title: String!
-  preview: String!
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String!
+  endCursor: String!
 }
 
 type TokenImageConnection {
@@ -263,6 +98,10 @@ type TokenImage implements Node {
   id: ID!
   title: String!
   url: String!
+}
+
+interface Node {
+  id: ID!
 }
 
 """
@@ -342,19 +181,15 @@ type MapToken {
   referenceId: ID
 }
 
+type Image implements Node {
+  id: ID!
+  imageId: ID!
+  url: String!
+}
+
 type Mutation {
   logIn(input: LogInInput): LogInResult!
   changeName(input: ChangeNameInput!): ChangeNameResult!
-  chatMessageCreate(input: ChatMessageCreateInput!): ChatMessageCreateResult!
-  shareResource(input: ShareResourceInput!): Boolean
-  shareImage(input: ShareImageInput!): Boolean
-  splashShareImage(input: SplashShareImageInput!): Boolean
-  noteCreate(input: NoteCreateInput!): NoteCreateResult!
-  noteDelete(input: NoteDeleteInput!): NoteDeleteResult!
-  noteUpdateContent(input: NoteUpdateContentInput!): NoteUpdateResult!
-  noteUpdateTitle(input: NoteUpdateTitleInput!): NoteUpdateResult!
-  noteUpdateAccess(input: NoteUpdateAccessInput!): NoteUpdateResult!
-  noteUpdateIsEntryPoint(input: NoteUpdateIsEntryPointInput!): NoteUpdateResult!
   requestTokenImageUpload(
     input: RequestTokenImageUploadInput!
   ): RequestImageTokenUploadResult!
@@ -398,6 +233,7 @@ type Mutation {
   Ping a point on the map.
   """
   mapPing(input: MapPingInput!): Boolean
+  splashShareImage(input: SplashShareImageInput!): Boolean
 }
 
 type LogInResult {
@@ -415,79 +251,6 @@ type ChangeNameResult {
 
 input ChangeNameInput {
   name: String!
-}
-
-type ChatMessageCreateResult {
-  error: ChatMessageCreateResultError
-  success: ChatMessageCreateResultSuccess
-}
-
-type ChatMessageCreateResultError {
-  reason: String!
-}
-
-type ChatMessageCreateResultSuccess {
-  _: Boolean
-}
-
-input ChatMessageCreateInput {
-  rawContent: String!
-  variables: String
-}
-
-input ShareResourceInput {
-  contentId: ID!
-}
-
-input ShareImageInput {
-  imageId: ID!
-}
-
-input SplashShareImageInput {
-  imageId: ID
-}
-
-type NoteCreateResult {
-  note: Note!
-}
-
-input NoteCreateInput {
-  title: String!
-  content: String!
-  isEntryPoint: Boolean!
-}
-
-type NoteDeleteResult {
-  success: Boolean!
-  deletedNoteId: ID!
-}
-
-input NoteDeleteInput {
-  noteId: String!
-}
-
-type NoteUpdateResult {
-  note: Note
-}
-
-input NoteUpdateContentInput {
-  id: String!
-  content: String!
-}
-
-input NoteUpdateTitleInput {
-  id: String!
-  title: String!
-}
-
-input NoteUpdateAccessInput {
-  id: String!
-  access: String!
-}
-
-input NoteUpdateIsEntryPointInput {
-  id: String!
-  isEntryPoint: Boolean!
 }
 
 union RequestImageTokenUploadResult =
@@ -710,14 +473,12 @@ input MapPingInput {
   y: Float!
 }
 
+input SplashShareImageInput {
+  imageId: ID
+}
+
 type Subscription {
   userUpdate: UserUpdateSubscription!
-  chatMessagesAdded: ChatMessagesAddedSubscription!
-  notesUpdates(
-    filter: NotesFilter
-    endCursor: String!
-    hasNextPage: Boolean!
-  ): NotesUpdates!
   mapPing(mapId: ID!): MapPing!
 }
 
@@ -738,45 +499,6 @@ type UserRemoveUpdate {
 
 type UserChangeUpdate {
   user: User!
-}
-
-type ChatMessagesAddedSubscription {
-  messages: [ChatMessage!]!
-}
-
-"""
-Describes update instructions for the NoteConnection type.
-"""
-type NotesUpdates {
-  """
-  A node that was added to the connection.
-  """
-  addedNode: NotesConnectionEdgeInsertionUpdate
-
-  """
-  A note that was updated.
-  """
-  updatedNote: Note
-
-  """
-  A note that was removed.
-  """
-  removedNoteId: ID
-}
-
-"""
-Describes where a edge should be inserted inside a NotesConnection.
-"""
-type NotesConnectionEdgeInsertionUpdate {
-  """
-  The cursor of the item before which the node should be inserted.
-  """
-  previousCursor: String
-
-  """
-  The edge that should be inserted.
-  """
-  edge: NoteEdge
 }
 
 type MapPing {
