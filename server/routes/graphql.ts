@@ -6,7 +6,6 @@ import type { Server as IOServer, Socket as IOSocket } from "socket.io";
 import { createPubSub, map } from "@graphql-yoga/subscription";
 import { flow } from "fp-ts/lib/function";
 import { schema, GraphQLContextType, PubSubConfig } from "../graphql";
-import { createChat } from "../chat";
 import { createUser } from "../user";
 import type { Database } from "sqlite";
 import type {
@@ -50,13 +49,7 @@ export default ({
 }: Dependencies) => {
   const pubSub = createPubSub<PubSubConfig>();
 
-  const chat = createChat({ pubSub });
-
   const user = createUser({
-    sendUserConnectedMessage: ({ name }) =>
-      chat.addOperationalMessage({ content: `**${name}** connected.` }),
-    sendUserDisconnectedMessage: ({ name }) =>
-      chat.addOperationalMessage({ content: `**${name}** disconnected.` }),
     pubSub,
   });
 
@@ -124,7 +117,6 @@ export default ({
     isLazy: true,
     getParameter: ({ socket }) => {
       const contextValue: GraphQLContextType = {
-        chat,
         user,
         db,
         session: getSession(socket),

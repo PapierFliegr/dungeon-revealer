@@ -11,7 +11,6 @@ import { flow, identity } from "fp-ts/function";
 import * as E from "fp-ts/Either";
 import * as io from "io-ts";
 import { ThemedLevaPanel } from "./themed-leva-panel";
-import { ChatPositionContext } from "./authenticated-app-shell";
 import { useSelectedItems } from "./shared-token-state";
 import { levaPluginTokenImage } from "./leva-plugin/leva-plugin-token-image";
 import type { sharedTokenMenuUpdateManyMapTokenMutation } from "./__generated__/sharedTokenMenuUpdateManyMapTokenMutation.graphql";
@@ -96,7 +95,6 @@ const useTokenNoteDescriptionState = () =>
   useTokenMenuExpandedState(tokenNoteDescriptionStateSelector);
 
 export const SharedTokenMenu = (props: { currentMapId: string }) => {
-  const chatPosition = React.useContext(ChatPositionContext);
   const [selectedItems] = useSelectedItems();
 
   return (
@@ -104,10 +102,7 @@ export const SharedTokenMenu = (props: { currentMapId: string }) => {
       style={{
         position: "absolute",
         bottom: 100,
-        right:
-          chatPosition !== null
-            ? to(chatPosition.x, (value) => -value + 10 + chatPosition.width)
-            : 10,
+        right: 10,
         // @ts-ignore
         zIndex: 1,
         width: 300,

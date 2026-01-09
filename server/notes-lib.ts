@@ -16,8 +16,6 @@ export type NoteModelType = db.NoteModelType;
 export const decodeNote = db.decodeNote;
 export const NoteModel = db.NoteModel;
 
-export type NoteSearchMatchType = db.NoteSearchMatchType;
-
 const sanitizeNoteContent = (content: string) => {
   const [, ...contentLines] = content.split("\n");
 
@@ -318,14 +316,6 @@ export const deleteNote = (noteId: string) =>
         RTE.chainW(() => db.deleteNote(note.id))
       )
     )
-  );
-
-export const findPublicNotes = (query: string) =>
-  pipe(
-    auth.requireAuth(),
-    RTE.rightReaderTask,
-    RTE.chainW(() => RTE.ask<auth.SessionDependency>()),
-    RTE.chainW((d) => db.searchNotes(query, d.session.role === "user"))
   );
 
 export const importNote = flow(

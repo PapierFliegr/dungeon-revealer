@@ -25,12 +25,8 @@ export type UserPubSubConfig = {
 };
 
 export const createUser = ({
-  sendUserConnectedMessage,
-  sendUserDisconnectedMessage,
   pubSub,
 }: {
-  sendUserConnectedMessage: ({ name }: { name: string }) => void;
-  sendUserDisconnectedMessage: ({ name }: { name: string }) => void;
   pubSub: PubSub<UserPubSubConfig>;
 }) => {
   const users = new Map<string, UserRecord>();
@@ -58,7 +54,6 @@ export const createUser = ({
 
       if (timeout === undefined) {
         pubSub.publish("userUpdate", { type: "ADD", data: { userId: id } });
-        sendUserConnectedMessage({ name: user.name });
       }
       return user;
     },
@@ -72,10 +67,7 @@ export const createUser = ({
       // When a user disconnects we wait a few seconds before removing him from the list of online users.
       const timeout = setTimeout(() => {
         disconnectTimeouts.delete(id);
-        const user = remove(id);
-        if (user) {
-          sendUserDisconnectedMessage({ name: user.name });
-        }
+        remove(id);
       }, 10000).unref();
       disconnectTimeouts.set(id, timeout);
     },

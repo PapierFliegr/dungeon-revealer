@@ -184,81 +184,6 @@ export const resolveMaybeNote = flow(
   )
 );
 
-const GraphQLNoteSearchResultType = t.objectType<notes.NoteSearchMatchType>({
-  name: "NoteSearchResultType",
-  fields: () => [
-    t.field({
-      name: "noteId",
-      type: t.NonNull(t.ID),
-      resolve: (obj) => encodeNoteId(obj.noteId),
-    }),
-    t.field({
-      name: "documentId",
-      type: t.NonNull(t.ID),
-      resolve: (obj) => obj.noteId,
-    }),
-    t.field({
-      name: "title",
-      type: t.NonNull(t.String),
-      resolve: (obj) => obj.title,
-    }),
-    t.field({
-      name: "preview",
-      type: t.NonNull(t.String),
-      resolve: (obj) => obj.preview,
-    }),
-  ],
-});
-
-const GraphQLNoteSearchEdgeType = t.objectType<notes.NoteSearchMatchType>({
-  name: "NoteSearchEdgeType",
-  fields: () => [
-    t.field({
-      name: "cursor",
-      type: t.NonNull(t.String),
-      resolve: (obj) => obj.noteId,
-    }),
-    t.field({
-      name: "node",
-      type: t.NonNull(GraphQLNoteSearchResultType),
-      resolve: (obj) => obj,
-    }),
-  ],
-});
-
-type NoteSearchConnectionType = {
-  edges: notes.NoteSearchMatchType[];
-};
-
-const GraphQLNoteSearchConnectionType = t.objectType<NoteSearchConnectionType>({
-  name: "NoteSearchConnection",
-  fields: () => [
-    t.field({
-      name: "pageInfo",
-      type: Relay.GraphQLPageInfoType,
-      resolve: () => ({}),
-    }),
-    t.field({
-      name: "edges",
-      type: t.NonNull(t.List(t.NonNull(GraphQLNoteSearchEdgeType))),
-      resolve: (obj) => obj.edges,
-    }),
-  ],
-});
-
-const resolveNotesSearch = (query: string) =>
-  pipe(
-    notes.findPublicNotes(query),
-    RTE.fold(
-      (err) => {
-        throw err;
-      },
-      (edges) => {
-        return RT.of({ edges });
-      }
-    )
-  );
-
 const NotesConnectionVersion = io.literal("1");
 const NotesConnectionIdentifier = io.literal("NotesConnection");
 const NotesConnectionCreatedAt = IntegerFromString;
@@ -342,17 +267,6 @@ export const queryFields = [
         context
       );
     },
-  }),
-  t.field({
-    name: "notesSearch",
-    type: t.NonNull(GraphQLNoteSearchConnectionType),
-    args: {
-      first: t.arg(t.Int),
-      after: t.arg(t.String),
-      query: t.arg(t.String),
-    },
-    resolve: (_, args, context) =>
-      RT.run(resolveNotesSearch(args.query || ""), context),
   }),
   t.field({
     name: "note",
