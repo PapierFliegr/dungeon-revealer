@@ -111,6 +111,7 @@ export type MapEntity = {
   tokens: Array<any>;
   fogLiveRevision: string;
   fogProgressRevision: string;
+  rotation: number;
 };
 
 export class Maps {
@@ -175,6 +176,7 @@ export class Maps {
           "fogLiveRevision" in rawMap
             ? rawMap.fogProgressRevision
             : randomUUID(),
+        rotation: "rotation" in rawMap ? (rawMap.rotation as number) : 0,
       };
 
       return map;
@@ -220,6 +222,7 @@ export class Maps {
         tokens: [],
         fogProgressRevision: randomUUID(),
         fogLiveRevision: randomUUID(),
+        rotation: 0,
       };
 
       await fs.move(filePath, path.join(this._buildMapFolderPath(id), mapPath));

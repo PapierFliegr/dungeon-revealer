@@ -259,6 +259,29 @@ const GraphQLMapUpdateGridInputType = t.inputObjectType({
   }),
 });
 
+const GraphQLMapUpdateRotationResultType =
+  t.objectType<lib.MapUpdateRotationResult>({
+    name: "MapUpdateRotationResult",
+    fields: () => [
+      t.field({
+        name: "updatedMap",
+        type: t.NonNull(GraphQLMapType),
+      }),
+    ],
+  });
+
+const GraphQLMapUpdateRotationInputType = t.inputObjectType({
+  name: "MapUpdateRotationInput",
+  fields: () => ({
+    mapId: {
+      type: t.NonNullInput(t.ID),
+    },
+    rotation: {
+      type: t.NonNullInput(t.Int),
+    },
+  }),
+});
+
 const GraphQLMapPingInputType = t.inputObjectType({
   name: "MapPingInput",
   fields: () => ({
@@ -384,6 +407,16 @@ export const mutationFields = [
     },
     resolve: (_, { input }, context) =>
       RT.run(lib.mapUpdateGrid(input), context),
+  }),
+  t.field({
+    name: "mapUpdateRotation",
+    description: "Update the rotation of a map.",
+    type: t.NonNull(GraphQLMapUpdateRotationResultType),
+    args: {
+      input: t.arg(t.NonNullInput(GraphQLMapUpdateRotationInputType)),
+    },
+    resolve: (_, { input }, context) =>
+      RT.run(lib.mapUpdateRotation(input), context),
   }),
   t.field({
     name: "mapPing",
@@ -585,6 +618,11 @@ const GraphQLMapType = t.objectType<MapEntity>({
         context.session.role === "admin"
           ? source.tokens
           : source.tokens.filter((token) => token.isVisibleForPlayers),
+    }),
+    t.field({
+      name: "rotation",
+      description: "The rotation of the map in degrees (0, 90, 180, 270).",
+      type: t.NonNull(t.Int),
     }),
   ],
 });
